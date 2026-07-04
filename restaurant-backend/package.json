@@ -4,14 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "env": "^0.0.2",
+    "express": "^5.2.1",
+    "fs": "^0.0.1-security",
+    "joi": "^18.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.3",
+    "multer": "^2.2.0",
+    "resend": "^6.17.1",
+    "yup": "^1.7.1"
   }
 }
