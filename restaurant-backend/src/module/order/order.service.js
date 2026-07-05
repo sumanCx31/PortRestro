@@ -1,4 +1,4 @@
-const OrderModel = require("../order/order.model");
+const OrderModel = require("./order.model");
 const TripModel = require("../tripUpdation/tripUpdate.model");
 
 class OrderService {

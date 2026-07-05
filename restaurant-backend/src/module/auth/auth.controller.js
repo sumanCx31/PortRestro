@@ -89,7 +89,8 @@ activateUser = async (req, res, next) => {
           message: "Email is not registered.",
           status: "EMAIL_NOT_REGISTERED",
         };
-      }
+      }console.log(userDetail.password);
+      
       if (!bcrypt.compareSync(password, userDetail.password)) {
         throw {
           code: 422,

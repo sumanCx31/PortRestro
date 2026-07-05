@@ -23,4 +23,4 @@ authRouter.get("/user-detail/:_id",auth(USER_ROLES.ADMIN),authCtrl.getUserDetail
 
 
 authRouter.put("/user/:id",authCtrl.updateUserById)
-module.exports = authRouter
+module.exports = authRouter;

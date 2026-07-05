@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 // const cloudinarySvc = require("../../cloudinary.service");
 const { Status } = require("../../config/constant");
 const { AppConfig } = require("../../config/config");
-// const emailSvc = require("../../services/email.service");
+const emailSvc = require("../../services/email.service");
 const AuthModel = require("./auth.model");
 const userSvc = require("../user/user.service");
 

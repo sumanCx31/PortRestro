@@ -14,7 +14,7 @@ class UserService {
       image: user.image,
       _id: user._id,
       cafeName: user.cafeName,
-      cafeId: user.cafeId,
+      cafeUserName: user.cafeUserName,
       createdBy: user.createdBy,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

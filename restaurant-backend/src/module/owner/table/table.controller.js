@@ -1,8 +1,7 @@
-const TableModel = require("../models/TableModel");
+const TableModel = require("./table.model");
 
 class TableController {
 
-  // Create Single Table
   createTable = async (req, res, next) => {
     try {
 
@@ -32,8 +31,6 @@ class TableController {
       next(error);
     }
   };
-
-
 
   // Create Multiple Tables
   createBulkTables = async (req, res, next) => {
@@ -71,7 +68,6 @@ class TableController {
       next(error);
     }
   };
-
 
 
   // Get All Tables

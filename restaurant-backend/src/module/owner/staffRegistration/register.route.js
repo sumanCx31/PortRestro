@@ -1,6 +1,11 @@
+const { USER_ROLES } = require("../../../config/constant");
+const auth = require("../../../middleware/auth.middleware");
+const bodyValidator = require("../../../middleware/request-validate.middleware");
+const registerCltr = require("./register.controller");
+const { staffDTO } = require("./register.validator");
 const staffRegistrationRouter = require("express").Router();
 
-staffRegistrationRouter.post("/register",registerCltr.createStafeRegistration);
+staffRegistrationRouter.post("/register",auth(USER_ROLES.OWNER || USER_ROLES.ADMIN),bodyValidator(staffDTO),registerCltr.createStaffRegistration);
 staffRegistrationRouter.get("/get-all",registerCltr.getAllStaffRegistration);
 staffRegistrationRouter.get("/get/:id",registerCltr.getSingleStaffRegistration);
 staffRegistrationRouter.patch("/update/:id",registerCltr.updateStaffRegistration);
