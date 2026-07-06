@@ -1,82 +1,43 @@
-const mongoose = require("mongoose");
+const OrderSchema = new mongoose.Schema({
+    customerName: String,
+    customerPhone: String,
 
-const OrderSchema = new mongoose.Schema(
-  {
-    _id: {
-      type: mongoose.Types.ObjectId,
-      auto: true,
+    table:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Table"
     },
 
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      required: true,
+    takenBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
     },
 
-    trip: {
-      type: mongoose.Types.ObjectId,
-      ref: "Trip",
-      required: true,
-    },
+    items:[
+        {
+            menu:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"Menu"
+            },
 
-    seats: [
-      {
-        type: String,
-        required: true,
-      },
+            quantity:Number,
+
+            price:Number,
+
+            subtotal:Number
+        }
     ],
 
-    totalAmount: {
-      type: Number,
-      required: true,
-    },
-    promoCode:{
-      type: String,
-      default: null,
+    totalPrice:Number,
+
+    paymentMethod:{
+        type:String,
+        enum:["CASH","CARD","ESEWA","KHALTI"]
     },
 
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed"],
-      default: "pending",
-    },
+    orderStatus:{
+        type:String,
+        enum:["PENDING","PREPARING","READY","SERVED","COMPLETED"],
+        default:"PENDING"
+    }
 
-    bookingStatus: {
-      type: String,
-      enum: ["booked", "cancelled"],
-      default: "booked",
-    },
-
-    paymentMethod: {
-      type: String,
-      enum: ["cash", "khalti", "esewa"],
-      default: "cash",
-    },
-
-    // 🔥 NEW FIELDS
-    pidx: {
-      type: String,
-      default: null,
-    },
-
-    transactionId: {
-      type: String,
-      default: null,
-    },
-
-    createdBy: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
-
-    updatedBy: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
-  },
-  { timestamps: true }
-);
-
-module.exports = mongoose.model("Order", OrderSchema);
+},{timestamps:true})

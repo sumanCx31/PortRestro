@@ -1,50 +1,53 @@
-const mongoose = require("mongoose");
-const orderModel = require("./order.model");
+const OrderModel = require("./order.model");
+const MenuModel = require("../menu/menu.model");
 
 class OrderController {
-  createOrder = async (req, res) => {
-   try {
-    
-   } catch (exception) {
-    throw exception;
-   }
-  };
+    createOrder = async (req,res,next)=>{
+        try{
+            const {
+                customerName="Guest",
+                customerPhone=null,
+                table,
+                items,
+                paymentMethod
+            } = req.body;
+            let totalPrice = 0;
+            const orderItems = [];
+            for(const item of items){
+                const menu = await MenuModel.findById(item.menu);
+                if(!menu){
+                    return res.status(404).json({
+                        message:"Menu item not found"
+                    });
+                }
+                const subtotal = menu.price * item.quantity;
+                totalPrice += subtotal;
+                orderItems.push({
+                    menu:menu._id,
+                    quantity:item.quantity,
+                    price:menu.price,
+                    subtotal
+                });
+            }
 
- getAllOrders = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    const [orders, totalOrders] = await Promise.all([
-      OrderModel.find()
-        .sort({ createdAt: -1 }) 
-        .skip(skip)
-        .limit(limit),
-      OrderModel.countDocuments(),
-    ]);
-
-    // 3. Calculate total pages
-    const totalPages = Math.ceil(totalOrders / limit);
-
-    res.status(200).json({
-      status: "SUCCESS",
-      data: orders,
-      pagination: {
-        totalOrders,
-        totalPages,
-        currentPage: page,
-        limit,
-      },
-      message: "Orders retrieved successfully",
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: "ERROR",
-      message: err.message,
-    });
-  }
-};
+            const order = await OrderModel.create({
+                customerName,
+                customerPhone,
+                table,
+                takenBy:req.loggedInUser._id,
+                items:orderItems,
+                totalPrice,
+                paymentMethod
+            });
+            res.status(201).json({
+                success:true,
+                message:"Order created successfully",
+                data:order
+            });
+        }catch(error){
+            next(error);
+        }
+    }
 }
-const orderCltr = new OrderController();
-module.exports = orderCltr;
+
+module.exports = new OrderController();

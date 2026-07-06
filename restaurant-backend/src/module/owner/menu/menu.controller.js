@@ -1,5 +1,5 @@
 const MenuModel = require("./menu.model");
-const cloudinarySvc = require("../../services/cloudinary.service");
+// const cloudinarySvc = require("../../services/cloudinary.service");
 
 class MenuController {
   // Create Menu
@@ -8,8 +8,9 @@ class MenuController {
       const {
         name,
         description,
-        category,
+        // category=null,
         price,
+        cafeUserName,
         isAvailable = true,
       } = req.body;
 
@@ -27,18 +28,19 @@ class MenuController {
 
       let image = {};
 
-      if (req.file) {
-        image = await cloudinarySvc.fileUpload(req.file.path, "/menu");
-      }
+      // if (req.file) {
+      //   image = await cloudinarySvc.fileUpload(req.file.path, "/menu");
+      // }
 
       const menu = await MenuModel.create({
         name,
         description,
-        category,
+        // category,
         price,
         isAvailable,
         image,
-        createdBy: req.loggedInUser._id,
+        cafeUserName,
+        // createdBy: req.loggedInUser._id
       });
 
       return res.status(201).json({

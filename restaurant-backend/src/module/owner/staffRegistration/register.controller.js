@@ -1,10 +1,11 @@
-const StaffModel = require("./register.model");
+const StaffModel = require("../../staff/staff.model");
+const staffSvc = require("../../staff/staff.service");
 
 class staffRegistrationController {
   async createStaffRegistration(req, res) {
     try {
-      const { name, email, phone, userName, password } = req.body;
-      if (!name || !email || !phone || !userName || !password) {
+      const { name, email, phone, userName, password, cafeUserName } = req.body;
+      if (!name || !email || !phone || !userName || !password || !cafeUserName) {
         return res.status(400).json({
           success: false,
           message: "All fields are required.",
@@ -21,15 +22,14 @@ class staffRegistrationController {
         });
       }
 
-      const newStaff = new StaffModel({
+      const newStaff = await staffSvc.createStaff({
         name,
         email,
         phone,
         userName,
         password,
-      });
-
-      await newStaff.save();
+        cafeUserName,
+      })
 
       return res.status(201).json({
         success: true,

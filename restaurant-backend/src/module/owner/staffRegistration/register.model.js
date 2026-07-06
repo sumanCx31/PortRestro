@@ -29,6 +29,11 @@ const staffRegistrationSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        cafeUserName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
     },
     {
         timestamps: true,

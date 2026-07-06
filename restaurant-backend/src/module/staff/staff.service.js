@@ -27,7 +27,7 @@ class StaffService {
     }
   }
 
-  getSingleUserByFilter = async (filter) => {
+  getSingleStaffByFilter = async (filter) => {
     try {
       const userData = await staffModel.findOne(filter);
       return userData;
