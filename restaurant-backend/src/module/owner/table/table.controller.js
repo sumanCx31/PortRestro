@@ -5,7 +5,7 @@ class TableController {
   createTable = async (req, res, next) => {
     try {
 
-      let { name, capacity } = req.body;
+      let { name, capacity, cafeUserName } = req.body;
 
       if (!name) {
         const count = await TableModel.countDocuments();
@@ -19,6 +19,7 @@ class TableController {
       const table = await TableModel.create({
         name,
         capacity,
+        cafeUserName,
       });
 
       res.status(201).json({
@@ -36,7 +37,7 @@ class TableController {
   createBulkTables = async (req, res, next) => {
     try {
 
-      const { totalTables, capacity } = req.body;
+      const { totalTables, capacity, cafeUserName } = req.body;
 
       if (!totalTables || totalTables <= 0) {
         return res.status(400).json({
@@ -53,6 +54,7 @@ class TableController {
         tables.push({
           name: `Table ${existingTables + i}`,
           capacity: capacity || 4,
+          cafeUserName: cafeUserName || "",
         });
       }
 
@@ -71,10 +73,12 @@ class TableController {
 
 
   // Get All Tables
-  getAllTables = async (req, res, next) => {
+  getAllTablesByCafeUserName = async (req, res, next) => {
     try {
 
-      const tables = await TableModel.find().sort({ name: 1 });
+      const { cafeUserName } = req.params;
+
+      const tables = await TableModel.find({ cafeUserName }).sort({ name: 1 });
 
       res.status(200).json({
         success: true,

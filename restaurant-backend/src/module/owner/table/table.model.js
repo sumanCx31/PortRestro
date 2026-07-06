@@ -20,6 +20,11 @@ const tableSchema = new mongoose.Schema(
       enum: ["available", "occupied", "reserved"],
       default: "available",
     },
+    cafeUserName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,

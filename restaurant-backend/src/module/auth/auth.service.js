@@ -23,6 +23,8 @@ class AuthService {
       data.activationToken = this.generateOTP();
 
       const { confirmPassword, ...mappedData } = data;
+      console.log("here:",mappedData);
+      
       return mappedData;
     } catch (exception) {
       throw exception;

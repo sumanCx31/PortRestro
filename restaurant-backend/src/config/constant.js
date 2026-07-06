@@ -1,9 +1,9 @@
 const USER_ROLES = Object.freeze({
   OWNER: "OWNER",
-  ADMIN: "ADMIN",
-  MANAGER: "MANAGER",
-  WAITER: "WAITER",
-  CASHIER: "CASHIER",
+  ADMIN: "admin",
+  MANAGER: "manager",
+  WAITER: "waiter",
+  CASHIER: "cashier",
 });
 
 const Status = Object.freeze({

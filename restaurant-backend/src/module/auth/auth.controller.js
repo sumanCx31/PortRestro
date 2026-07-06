@@ -1,3 +1,4 @@
+const { randomStringGenerator } = require("../../../utilities/helper");
 const { AppConfig } = require("../../config/config");
 const { Status } = require("../../config/constant");
 // const { randomStringGenerator } = require("../../utilities/helper");
@@ -19,6 +20,8 @@ class AuthController {
       //   };
       // }
       const data = await authSvc.transformUserCreate(req);
+      console.log("transform:",data);
+      
       let user = await userSvc.createUser(data);
 
       await authSvc.sendActivationNotification(user);
@@ -80,9 +83,13 @@ activateUser = async (req, res, next) => {
   loginUser = async (req, res, next) => {
     try {
       const { email, password } = req.body;
+      console.log("password:",password);
+      
       const userDetail = await userSvc.getSingleUserByFilter({
         email: email,
       });
+      console.log("userDetail:",userDetail);
+      
       if (!userDetail) {
         throw {
           code: 422,

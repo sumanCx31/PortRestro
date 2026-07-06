@@ -23,7 +23,6 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
-      select: false,
     },
 
     role: {
@@ -151,7 +150,6 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// Additional indexes
 UserSchema.index({ phone: 1 });
 UserSchema.index({ role: 1 });
 UserSchema.index({ status: 1 });
