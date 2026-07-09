@@ -3,10 +3,12 @@ const MenuRouter = express.Router();
 const menuController = require("./menu.controller");
 const { USER_ROLES } = require("../../../config/constant");
 const auth = require("../../../middleware/auth.middleware");
+const uploader = require("../../../middleware/uploader.middleware");
 
 // Create Menu
 MenuRouter.post(
   "/",
+  uploader().single("image"),
   menuController.createMenu
 );
 

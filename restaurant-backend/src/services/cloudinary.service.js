@@ -1,5 +1,5 @@
 const { AppConfig } = require("../config/config");
-const { deleteFile } = require("../utilities/helper");
+const { deleteFile } = require("../../utilities/helper");
 const cloudinary = require("cloudinary").v2;
 
 class CloudinaryService {

@@ -11,7 +11,7 @@ const server = http.createServer(app);
 // });
 
 const PORT = 9005;
-const HOST = "127.0.0.1";
+const HOST = "0.0.0.0";
 
 server.listen(PORT, HOST, (err) => {
     if(!err) {

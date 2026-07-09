@@ -1,43 +1,44 @@
+const { default: mongoose } = require("mongoose");
+
 const OrderSchema = new mongoose.Schema({
     customerName: String,
     customerPhone: String,
 
-    table:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Table"
+    table: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Table"
     },
 
-    takenBy:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+    takenBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
 
-    items:[
+    items: [
         {
-            menu:{
-                type:mongoose.Schema.Types.ObjectId,
-                ref:"Menu"
+            menu: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Menu"
             },
-
-            quantity:Number,
-
-            price:Number,
-
-            subtotal:Number
+            quantity: Number,
+            price: Number,
+            subtotal: Number
         }
     ],
 
-    totalPrice:Number,
+    totalPrice: Number,
 
-    paymentMethod:{
-        type:String,
-        enum:["CASH","CARD","ESEWA","KHALTI"]
+    paymentMethod: {
+        type: String,
+        enum: ["CASH", "CARD", "ESEWA", "KHALTI"]
     },
 
-    orderStatus:{
-        type:String,
-        enum:["PENDING","PREPARING","READY","SERVED","COMPLETED"],
-        default:"PENDING"
+    orderStatus: {
+        type: String,
+        enum: ["PENDING", "PREPARING", "READY", "SERVED", "COMPLETED"],
+        default: "PENDING"
     }
 
-},{timestamps:true})
+}, { timestamps: true });
+
+module.exports = mongoose.model("Order", OrderSchema);

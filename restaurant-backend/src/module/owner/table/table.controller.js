@@ -76,9 +76,11 @@ class TableController {
   getAllTablesByCafeUserName = async (req, res, next) => {
     try {
 
-      const { cafeUserName } = req.params;
+      const { _cafeUserName } = req.params;
+      console.log(_cafeUserName);
+      
 
-      const tables = await TableModel.find({ cafeUserName }).sort({ name: 1 });
+       const tables = await TableModel.find();
 
       res.status(200).json({
         success: true,
@@ -91,7 +93,34 @@ class TableController {
     }
   };
 
+  updateTableStatusById = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
 
+      const table = await TableModel.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true, runValidators: true }
+      );
+
+      if (!table) {
+        return res.status(404).json({
+          success: false,
+          message: "Table not found.",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Table status updated successfully.",
+        data: table,
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  };
 
   // Get Single Table
   getTableById = async (req, res, next) => {

@@ -1,6 +1,6 @@
 const multer = require("multer");
 const fs = require("fs");
-const { randomStringGenerator } = require("../utilities/helper.js");
+const { randomStringGenerator } = require("../../utilities/helper");
 
 const myStorage = multer.diskStorage({
     destination: (req, file, cb) => {

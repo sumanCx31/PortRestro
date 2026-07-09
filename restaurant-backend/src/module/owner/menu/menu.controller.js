@@ -1,5 +1,5 @@
 const MenuModel = require("./menu.model");
-// const cloudinarySvc = require("../../services/cloudinary.service");
+const cloudinarySvc = require("../../../services/cloudinary.service");
 
 class MenuController {
   // Create Menu
@@ -28,9 +28,9 @@ class MenuController {
 
       let image = {};
 
-      // if (req.file) {
-      //   image = await cloudinarySvc.fileUpload(req.file.path, "/menu");
-      // }
+      if (req.file) {
+        image = await cloudinarySvc.fileUpload(req.file.path, "/menu");
+      }
 
       const menu = await MenuModel.create({
         name,
