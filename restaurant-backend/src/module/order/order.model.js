@@ -3,6 +3,7 @@ const { default: mongoose } = require("mongoose");
 const OrderSchema = new mongoose.Schema({
     customerName: String,
     customerPhone: String,
+    cafeUserName: String,
 
     table: {
         type: mongoose.Schema.Types.ObjectId,

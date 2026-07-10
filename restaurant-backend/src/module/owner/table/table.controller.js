@@ -80,7 +80,7 @@ class TableController {
       console.log(_cafeUserName);
       
 
-       const tables = await TableModel.find();
+       const tables = await TableModel.find({cafeUserName: _cafeUserName});
 
       res.status(200).json({
         success: true,
