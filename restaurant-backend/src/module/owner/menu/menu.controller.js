@@ -168,30 +168,39 @@ class MenuController {
   };
 
   // Delete Menu (Soft Delete)
-  deleteMenu = async (req, res, next) => {
-    try {
-      const menu = await MenuModel.findById(req.params.id);
+ deleteMenu = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-      if (!menu) {
-        return res.status(404).json({
-          success: false,
-          message: "Menu not found.",
-        });
-      }
+    const menu = await MenuModel.findById(id);
 
-      menu.isDeleted = true;
-      menu.updatedBy = req.loggedInUser._id;
-
-      await menu.save();
-
-      return res.status(200).json({
-        success: true,
-        message: "Menu deleted successfully.",
+    if (!menu) {
+      return res.status(404).json({
+        success: false,
+        message: "Menu not found",
       });
-    } catch (error) {
-      next(error);
     }
-  };
+
+    if (menu.isDeleted) {
+      return res.status(400).json({
+        success: false,
+        message: "Menu already deleted",
+      });
+    }
+
+    menu.isDeleted = true;
+
+    await menu.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Menu deleted successfully",
+      data: menu,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
   // Toggle Availability
   toggleAvailability = async (req, res, next) => {

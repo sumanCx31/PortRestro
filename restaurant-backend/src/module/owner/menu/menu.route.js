@@ -34,8 +34,7 @@ MenuRouter.put(
 
 // Delete Menu
 MenuRouter.delete(
-  "/:id",
-  auth([USER_ROLES.OWNER, USER_ROLES.MANAGER]),
+  "/delete/:id",
   menuController.deleteMenu
 );
 

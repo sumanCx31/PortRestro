@@ -211,6 +211,109 @@ getOrderItemsById = async (req, res, next) => {
     }
   };
 
+deleteOrderItemsById = async (req, res, next) => {
+  try {
+    const { orderId, menuId } = req.params;
+
+    const order = await OrderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Check if item exists
+    const itemExists = order.items.find(
+      (item) => item.menu.toString() === menuId
+    );
+
+    if (!itemExists) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in this order",
+      });
+    }
+
+    // Remove item
+    order.items = order.items.filter(
+      (item) => item.menu.toString() !== menuId
+    );
+
+    // Recalculate total price
+    order.totalPrice = order.items.reduce(
+      (sum, item) => sum + item.subtotal,
+      0
+    );
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Item removed successfully",
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+decreaseOrderItemQuantity = async (req, res, next) => {
+  try {
+    const { orderId, menuId } = req.params;
+
+    const order = await OrderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const itemIndex = order.items.findIndex(
+      (item) => item.menu.toString() === menuId
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in order",
+      });
+    }
+
+    // Decrease quantity
+    order.items[itemIndex].quantity -= 1;
+
+    if (order.items[itemIndex].quantity <= 0) {
+      // Remove item completely
+      order.items.splice(itemIndex, 1);
+    } else {
+      // Update subtotal
+      order.items[itemIndex].subtotal =
+        order.items[itemIndex].quantity *
+        order.items[itemIndex].price;
+    }
+
+    // Recalculate total price
+    order.totalPrice = order.items.reduce(
+      (sum, item) => sum + item.subtotal,
+      0
+    );
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Item quantity updated successfully",
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 }
 
 module.exports = new OrderController();
