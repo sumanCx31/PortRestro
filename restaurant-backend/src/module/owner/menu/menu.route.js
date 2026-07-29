@@ -34,7 +34,7 @@ MenuRouter.put(
 
 // Delete Menu
 MenuRouter.delete(
-  "/delete/:id",
+  "/delete/:_id",
   menuController.deleteMenu
 );
 

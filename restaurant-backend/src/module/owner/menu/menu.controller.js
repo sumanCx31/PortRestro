@@ -11,6 +11,7 @@ class MenuController {
         // category=null,
         price,
         cafeUserName,
+        category,
         isAvailable = true,
       } = req.body;
 
@@ -35,7 +36,7 @@ class MenuController {
       const menu = await MenuModel.create({
         name,
         description,
-        // category,
+        category,
         price,
         isAvailable,
         image,
@@ -168,39 +169,31 @@ class MenuController {
   };
 
   // Delete Menu (Soft Delete)
- deleteMenu = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+deleteMenu = async (req, res, next) => {
+    try {
+      const { _id } = req.params;
 
-    const menu = await MenuModel.findById(id);
+      const menu = await MenuModel.findById({_id:_id});
+      console.log("i am here:",menu);
+      
+      if (!menu) {
+        return res.status(404).json({
+          success: false,
+          message: "Menu not found",
+        });
+      }
 
-    if (!menu) {
-      return res.status(404).json({
-        success: false,
-        message: "Menu not found",
+      menu.isDeleted = true;
+      await menu.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Menu deleted successfully",
       });
+    } catch (error) {
+      next(error);
     }
-
-    if (menu.isDeleted) {
-      return res.status(400).json({
-        success: false,
-        message: "Menu already deleted",
-      });
-    }
-
-    menu.isDeleted = true;
-
-    await menu.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Menu deleted successfully",
-      data: menu,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  };
 
   // Toggle Availability
   toggleAvailability = async (req, res, next) => {

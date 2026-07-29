@@ -38,13 +38,13 @@ app.use((err, req, res, next) => {
   let msg = err.message || "Internal Server Error...";
   let status = err.status || "SERVER_ERROR";
 
-  if(req.file) {
-    deleteFile(req.file.path)
-  }else if(req.files){
-    req.files.forEach((file) => {
-      deleteFile(file.path)
-    })
-  }
+  // if(req.file) {
+  //   deleteFile(req.file.path)
+  // }else if(req.files){
+  //   req.files.forEach((file) => {
+  //     deleteFile(file.path)
+  //   })
+  // }
 
    if(err.name === "MongoServerError") {
     if(+err.code === 11000) {

@@ -18,10 +18,9 @@ const MenuSchema = new mongoose.Schema(
     },
 
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "Category",
-      // required: [true, "Category is required"],
-      default: null,
+      // required: true,
     },
 
     price: {
@@ -74,7 +73,6 @@ const MenuSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      
     },
 
     updatedBy: {
@@ -82,8 +80,8 @@ const MenuSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
-    cafeUserName:{
-        type: String,
+    cafeUserName: {
+      type: String,
     },
 
     isDeleted: {
@@ -95,7 +93,7 @@ const MenuSchema = new mongoose.Schema(
     timestamps: true,
     autoCreate: true,
     autoIndex: true,
-  }
+  },
 );
 
 // Indexes
