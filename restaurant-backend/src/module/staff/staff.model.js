@@ -12,6 +12,10 @@ const StaffSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    role:{
+       type:String,
+       default:"staff"
+    },
     email: {
       type: String,
       required: true,

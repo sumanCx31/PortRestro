@@ -82,13 +82,51 @@ class OrderController {
   }
 };
 
-  getAllOrdersByCafeUserName = async (req, res, next) => {
+getAllOrdersByCafeUserName = async (req, res, next) => {
     try {
       const { _cafeUserName } = req.params;
-      const orders = await OrderModel.find({ cafeUserName: _cafeUserName }).populate("items.menu").populate("orderStatus");
+      const { filter, startDate, endDate } = req.query;
+
+      // Base query matching the cafe username
+      const query = { cafeUserName: _cafeUserName };
+
+      // Default to 'today' if no filter is explicitly provided
+      const activeFilter = filter || 'today';
+
+      if (activeFilter !== 'all') {
+        const start = new Date();
+        const end = new Date();
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+
+        if (activeFilter === 'yesterday') {
+          start.setDate(start.getDate() - 1);
+          end.setDate(end.getDate() - 1);
+        } else if (activeFilter === 'thisWeek') {
+          const firstDayOfWeek = start.getDate() - start.getDay();
+          start.setDate(firstDayOfWeek);
+        } else if (activeFilter === 'thisMonth') {
+          start.setDate(1);
+        } else if (activeFilter === 'custom' && startDate && endDate) {
+          start.setTime(new Date(startDate).getTime());
+          end.setTime(new Date(endDate).setHours(23, 59, 59, 999));
+        }
+
+        query.createdAt = {
+          $gte: start,
+          $lte: end
+        };
+      }
+
+      const orders = await OrderModel.find(query)
+        .populate("items.menu")
+        .sort({ createdAt: -1 }); // Sorted newest first
+
       return res.status(200).json({
         success: true,
         message: "Orders retrieved successfully",
+        total: orders.length,
         data: orders,
       });
     } catch (error) {

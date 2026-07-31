@@ -2,7 +2,7 @@ const authRouter = require("../module/auth/auth.router");
 const OrderRouter = require("../module/order/order.router");
 const categoryRouter = require("../module/owner/category/category.route");
 const MenuRouter = require("../module/owner/menu/menu.route");
-const staffRouter = require("../module/owner/staffRegistration/register.route");
+const staffRouter = require("../module/staff/staff.route");
 const tableRouter = require("../module/owner/table/table.route");
 const StatsRouter = require("../module/stats/stats.route");
 
