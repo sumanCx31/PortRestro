@@ -195,6 +195,44 @@ class StaffController {
         }
     };
 
+    login = async (req, res) => {
+        try{
+            const {userName,password} = req.body;
+            const staff = await Staff.findOne({userName});
+            if(!staff){
+                return res.status(404).json({
+                    status: "Error",
+                    message: "Staff member not found",
+                    data: null
+                });
+            }
+            const isPasswordValid = await bcrypt.compare(password, staff.password);
+            if(!isPasswordValid){
+                return res.status(401).json({
+                    status: "Error",
+                    message: "Invalid password",
+                    data: null
+                });
+            }
+            console.log("Staff login successful:", staff);
+            return res.status(200).json({
+                status: "Success",
+                message: "Staff login successful",
+                data: {
+                    id: staff._id,
+                    name: staff.name,
+                    email: staff.email,
+                    userName: staff.userName,
+                    cafeUserName: staff.cafeUserName,
+                    phone: staff.phone,
+                    gender: staff.gender
+                }
+            });
+        }catch(exception){
+            throw exception;
+        }
+    }
+
     // 7. Update Staff By ID
     update = async (req, res) => {
         try {

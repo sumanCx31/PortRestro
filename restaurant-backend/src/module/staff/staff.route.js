@@ -13,7 +13,8 @@ staffRouter.get("/", staffCltr.getAllStaff);                         // Get all 
 staffRouter.get("/cafe/:cafeUserName", staffCltr.getAllByCafeUserName); // Get all staff by cafe user name
 staffRouter.get("/:id", staffCltr.getByCafeUserName);                  // Get single staff by ID
 staffRouter.put("/:id", staffCltr.update);                             // Update staff by ID
-staffRouter.delete("/:id", staffCltr.deleteById);                      // Delete staff by ID
+staffRouter.delete("/:id", staffCltr.deleteById); 
+staffRouter.post('/login',staffCltr.login);                    // Delete staff by ID
 staffRouter.delete("/cafe/:cafeUserName", staffCltr.deleteByCafeUserName); // Delete all staff by cafe user name
 
 module.exports = staffRouter;
