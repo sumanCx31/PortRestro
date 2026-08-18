@@ -38,6 +38,10 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         enum: ["PENDING", "PREPARING", "READY", "SERVED", "COMPLETED"],
         default: "PENDING"
+    },
+    orderBy: {
+        type: String,
+        default: "admin"
     }
 
 }, { timestamps: true });

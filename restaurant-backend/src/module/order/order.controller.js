@@ -10,6 +10,7 @@ class OrderController {
         table,
         cafeUserName,
         items,
+        orderBy,
         paymentMethod = "CASH",
       } = req.body;
       let totalPrice = 0;
@@ -38,6 +39,7 @@ class OrderController {
         items: orderItems,
         totalPrice,
         paymentMethod,
+        orderBy,
         cafeUserName,
       });
 

@@ -17,25 +17,8 @@ const deleteFile = (filePath) => {
     }
 }
 
-const generateSeats = () => {
-  const seats = [];
-  for (let row = 1; row <= 8; row++) {
-    // Left side seats (A)
-    seats.push({ seatNumber: `A${row}1`, isBooked: false });
-    seats.push({ seatNumber: `A${row}2`, isBooked: false });
-
-    // Right side seats (B)
-    seats.push({ seatNumber: `B${row}1`, isBooked: false });
-    seats.push({ seatNumber: `B${row}2`, isBooked: false });
-  }
-  return seats;
-};
-
-// console.log(generateSeats());
-
 
 module.exports = {
     randomStringGenerator,
     deleteFile,
-    generateSeats
 }

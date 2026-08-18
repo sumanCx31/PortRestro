@@ -10,7 +10,7 @@ const authCtrl = new AuthController();
 
 authRouter.post("/register",bodyValidator(RegisterDTO),authCtrl.registerUser)
 authRouter.post("/activate",authCtrl.activateUser );
-authRouter.post("/login", authCtrl.loginUser)
+authRouter.post("/login", authCtrl.loginUser);
 authRouter.get("/me",auth(), authCtrl.loggedInUserProfile)
 authRouter.get("/logout",auth(USER_ROLES.ADMIN || USER_ROLES.DRIVER), authCtrl.logoutUser)
 authRouter.get("/refresh", authCtrl.refreshToken)
