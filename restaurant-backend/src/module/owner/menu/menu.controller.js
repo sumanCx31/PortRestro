@@ -100,6 +100,28 @@ class MenuController {
     }
   };
 
+  getAllMenusByCafeUserName = async (req, res, next) => {
+  try{
+    const { cafeUserName } = req.params;
+    const menus = await MenuModel.find({ cafeUserName, isDeleted: false });
+
+    if (!menus || menus.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No menus found for the specified cafe.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: menus,
+    });
+
+  }catch(exception){
+    throw exception;
+  }
+  }
+
   // Get Single Menu
   getMenuById = async (req, res, next) => {
     try {

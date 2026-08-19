@@ -18,6 +18,11 @@ MenuRouter.get(
   menuController.getAllMenus
 );
 
+MenuRouter.get(
+  "/cafe/:cafeUserName",
+  menuController.getAllMenusByCafeUserName
+);
+
 // Get Single Menu
 MenuRouter.get(
   "/:id",
