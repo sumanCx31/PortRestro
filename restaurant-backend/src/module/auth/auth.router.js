@@ -18,7 +18,7 @@ authRouter.post("/forget-password",bodyValidator(ResetPasswordRequestDTO),authCt
 authRouter.get("/forget-password-verify/:token", authCtrl.forgetPasswordTokenVerify);
 authRouter.put("/reset-password",bodyValidator(ResetPasswordDataDTO),authCtrl.resetPassword);
 authRouter.put("/change-password",auth(),bodyValidator(ChangePasswordDTO),authCtrl.changePassword);
-authRouter.get("/user",authCtrl.getAllUsers);
+authRouter.get("/user/:cafeUserName",authCtrl.getAllUsers);
 authRouter.get("/user-detail/:_id",auth(USER_ROLES.ADMIN),authCtrl.getUserDetail)
 
 

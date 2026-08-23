@@ -426,24 +426,27 @@ class AuthController {
 
   getAllUsers = async (req, res) => {
     try {
+      const cafeUserName = req.params.cafeUserName;
       const users = await UserModel.find({
-        role: { $in: ["driver", "passenger"] },
+        cafeUserName: { $in: cafeUserName },
       })
         .select("name email role phone address image")
         .lean();
-      const [customerCount, driverCount] = await Promise.all([
-        UserModel.countDocuments({ role: "driver" }),
-        UserModel.countDocuments({ role: "passenger" }),
+      const [adminCount, managerCount,staffCount] = await Promise.all([
+        UserModel.countDocuments({ role: "admin" }),
+        UserModel.countDocuments({ role: "manager" }),
+        UserModel.countDocuments({ role: "staff" }),
       ]);
 
-      const totalUsers = customerCount + driverCount;
+      const totalUsers = adminCount + managerCount+staffCount;
 
       res.json({
         success: true,
         data: {
-          Driver: customerCount,
-          passenger: driverCount,
-          TotalUsers: totalUsers,
+          adminCount: adminCount,
+          managerCount: managerCount,
+          staffCount: staffCount,
+          totalUsers:totalUsers,
           Users: users,
         },
       });
