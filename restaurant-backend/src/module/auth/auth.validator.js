@@ -11,11 +11,12 @@ const RegisterDTO = Joi.object({
     confirmPassword: Joi.string().equal(Joi.ref("password")).required().messages({"any.only":"Password and ConfirmPassword must be same"}),
     phone: Joi.string().max(21).allow(null,"").optional().default(null),
     address: Joi.string(),
-    role: Joi.string().allow('passenger','driver','admin').default("passenger"),
+    role: Joi.string().allow('cashier','manager','staff','admin').default("staff"),
     gender: Joi.string().allow('male','female','other').optional().default(null),
     image: Joi.any().optional(),
+    userName:Joi.string(),
     cafeName: Joi.string().optional().allow(null,"").default(null),
-    cafeUserName: Joi.string().required().min(2).max(50).regex(/^[a-zA-Z0-9_]+$/).messages({"string.pattern.base":"Cafe username can only contain letters, numbers, and underscores."}),
+    cafeUserName: Joi.string(),
 })
 const loginDTO = Joi.object({
     email: EmailDTO,

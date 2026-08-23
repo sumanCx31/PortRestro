@@ -11,21 +11,22 @@ const jwt = require("jsonwebtoken");
 class AuthController {
   registerUser = async (req, res, next) => {
     try {
-      // const {role} = req.body;
-      // if(role && role === "admin") {
-      //   throw {
-      //     code: 403,
-      //     message: "Admin registration is not allowed.",
-      //     status: "ADMIN_REGISTRATION_FORBIDDEN",
-      //   };
-      // }
+      // const userData = req.body;
+      let token = req.headers["authorization"];
+      if (token) {
+        // admin registeration
+        const adminRegister = await authSvc.createNewUserByAdmin(req);
+        res.json({
+        data: userSvc.getUserPublicProfile(adminRegister),
+        message:
+          "User registration successful.Now user can login with his credentials.",
+        status: "Success",
+        options: null,
+      })
+      }else{
       const data = await authSvc.transformUserCreate(req);
-      console.log("transform:",data);
-      
       let user = await userSvc.createUser(data);
-
       await authSvc.sendActivationNotification(user);
-
       res.json({
         data: userSvc.getUserPublicProfile(user),
         message:
@@ -33,71 +34,73 @@ class AuthController {
         status: "Success",
         options: null,
       });
+    }
     } catch (exception) {
       next(exception);
     }
   };
 
- // auth.controller.js
+  // auth.controller.js
 
-activateUser = async (req, res, next) => {
+  activateUser = async (req, res, next) => {
     try {
-        const { email, otp } = req.body;
+      const { email, otp } = req.body;
 
-        if (!email || !otp) {
-            throw { code: 400, message: "Email and OTP are required." };
-        }
-        const userDetail = await userSvc.getSingleUserByFilter({
-            email: email,
-            activationToken: otp,
-        });
+      if (!email || !otp) {
+        throw { code: 400, message: "Email and OTP are required." };
+      }
+      const userDetail = await userSvc.getSingleUserByFilter({
+        email: email,
+        activationToken: otp,
+      });
 
-        if (!userDetail) {
-            throw {
-                code: 422,
-                message: "Invalid OTP or Email. Please try again.",
-                status: "VALIDATION_FAILED",
-            };
-        }
+      if (!userDetail) {
+        throw {
+          code: 422,
+          message: "Invalid OTP or Email. Please try again.",
+          status: "VALIDATION_FAILED",
+        };
+      }
 
-        const updatedUser = await userSvc.updateSingleUserByFilter(
-            { _id: userDetail._id },
-            {
-                status: Status.ACTIVE,
-                activationToken: null, 
-            }
-        );
+      const updatedUser = await userSvc.updateSingleUserByFilter(
+        { _id: userDetail._id },
+        {
+          status: Status.ACTIVE,
+          activationToken: null,
+        },
+      );
 
-        await authSvc.newUserWelcomeEmail(updatedUser);
+      await authSvc.newUserWelcomeEmail(updatedUser);
 
-        res.json({
-            data: null,
-            message: "Account activated successfully.",
-            status: "ACTIVATED_SUCCESSFULLY",
-        });
+      res.json({
+        data: null,
+        message: "Account activated successfully.",
+        status: "ACTIVATED_SUCCESSFULLY",
+      });
     } catch (exception) {
-        next(exception);
+      next(exception);
     }
-};
+  };
 
   loginUser = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      console.log("password:",password);
-      
+      console.log("password:", password);
+
       const userDetail = await userSvc.getSingleUserByFilter({
         email: email,
       });
-      console.log("userDetail:",userDetail);
-      
+      console.log("userDetail:", userDetail);
+
       if (!userDetail) {
         throw {
           code: 422,
           message: "Email is not registered.",
           status: "EMAIL_NOT_REGISTERED",
         };
-      }console.log(userDetail.password);
-      
+      }
+      console.log(userDetail.password);
+
       if (!bcrypt.compareSync(password, userDetail.password)) {
         throw {
           code: 422,
@@ -309,7 +312,7 @@ activateUser = async (req, res, next) => {
   resetPassword = async (req, res, next) => {
     try {
       let token = req.headers.authorization;
-      token = token.replace("Bearer ","");
+      token = token.replace("Bearer ", "");
 
       const userDetail = await authSvc.verifyPasswordResetToken(token);
       const password = bcrypt.hashSync(req.body.password, 12);
@@ -341,44 +344,41 @@ activateUser = async (req, res, next) => {
 
   changePassword = async (req, res, next) => {
     try {
-        const userId = req.loggedInUser._id;
-        const { oldPassword, newPassword } = req.body;
+      const userId = req.loggedInUser._id;
+      const { oldPassword, newPassword } = req.body;
 
-      
-        const userDetail = await userSvc.getSingleUserByFilter({ _id: userId });
+      const userDetail = await userSvc.getSingleUserByFilter({ _id: userId });
 
-     
-        if (!bcrypt.compareSync(oldPassword, userDetail.password)) {
-            throw {
-                code: 400,
-                message: "Current password does not match.",
-                status: "OLD_PASSWORD_ERROR"
-            };
-        }
+      if (!bcrypt.compareSync(oldPassword, userDetail.password)) {
+        throw {
+          code: 400,
+          message: "Current password does not match.",
+          status: "OLD_PASSWORD_ERROR",
+        };
+      }
 
-      
-        const newHashedPassword = bcrypt.hashSync(newPassword, 12);
+      const newHashedPassword = bcrypt.hashSync(newPassword, 12);
 
-     
-        await userSvc.updateSingleUserByFilter(
-            { _id: userId },
-            { password: newHashedPassword }
-        );
+      await userSvc.updateSingleUserByFilter(
+        { _id: userId },
+        { password: newHashedPassword },
+      );
 
-        await authSvc.logoutFromAll({
-            user: userId,
-        });
+      await authSvc.logoutFromAll({
+        user: userId,
+      });
 
-        res.json({
-            data: null,
-            message: "Password changed successfully. Please login with your new password.",
-            status: "PASSWORD_CHANGE_SUCCESS",
-            options: null,
-        });
+      res.json({
+        data: null,
+        message:
+          "Password changed successfully. Please login with your new password.",
+        status: "PASSWORD_CHANGE_SUCCESS",
+        options: null,
+      });
     } catch (exception) {
-        next(exception);
+      next(exception);
     }
-};
+  };
 
   loggedInUserProfile = (req, res, next) => {
     res.json({
@@ -410,19 +410,19 @@ activateUser = async (req, res, next) => {
     });
   };
 
-  getUserDetail =  async(req,res)=>{
+  getUserDetail = async (req, res) => {
     try {
       const _id = req.params._id;
-      const detail = await UserModel.find({_id});
+      const detail = await UserModel.find({ _id });
       res.json({
-        data:detail,
-        message:"user detail fetched sucessfully!!",
-        status:"USER_DETAIL_FETCHED"
-      })
+        data: detail,
+        message: "user detail fetched sucessfully!!",
+        status: "USER_DETAIL_FETCHED",
+      });
     } catch (exception) {
       throw exception;
     }
-  }
+  };
 
   getAllUsers = async (req, res) => {
     try {

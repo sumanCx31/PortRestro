@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    userName:{
+      type: String,
+      default: null,
+    },
 
     password: {
       type: String,
@@ -65,10 +69,8 @@ const UserSchema = new mongoose.Schema(
 
     cafeUserName: {
       type: String,
-      required: [true, "Cafe username is required"],
-      trim: true,
-      unique: true,
-      lowercase: true,
+      required: true,
+      // trim: s
     },
 
     dob: {
@@ -150,9 +152,9 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-UserSchema.index({ phone: 1 });
-UserSchema.index({ role: 1 });
-UserSchema.index({ status: 1 });
-UserSchema.index({ isDeleted: 1 });
+// UserSchema.index({ phone: 1 });
+// UserSchema.index({ role: 1 });
+// UserSchema.index({ status: 1 });
+// UserSchema.index({ isDeleted: 1 });
 
 module.exports = mongoose.model("User", UserSchema);

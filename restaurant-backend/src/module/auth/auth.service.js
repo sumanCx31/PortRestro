@@ -1,10 +1,12 @@
 const bcrypt = require("bcryptjs");
-// const cloudinarySvc = require("../../cloudinary.service");
+// const cloudinarySvc = require("../../cloudinary.service")
+const jwt = require("jsonwebtoken");
 const { Status } = require("../../config/constant");
 const { AppConfig } = require("../../config/config");
 const emailSvc = require("../../services/email.service");
 const AuthModel = require("./auth.model");
 const userSvc = require("../user/user.service");
+const cloudinarySvc = require("../../services/cloudinary.service");
 
 class AuthService {
   generateOTP = () => {
@@ -23,8 +25,8 @@ class AuthService {
       data.activationToken = this.generateOTP();
 
       const { confirmPassword, ...mappedData } = data;
-      console.log("here:",mappedData);
-      
+      console.log("here:", mappedData);
+
       return mappedData;
     } catch (exception) {
       throw exception;
@@ -98,6 +100,125 @@ class AuthService {
       return await auth.save();
     } catch (exception) {
       throw exception;
+    }
+  };
+
+createNewUserByAdmin = async (req) => {
+    try {
+      const userData = req.body || {};
+      console.log("I am in Admin code:");
+      
+      // Ensure password exists before trying to hash it
+      if (!userData.password) {
+        throw {
+          code: 400,
+          message: "Password is required",
+          status: "PASSWORD_REQUIRED",
+        };
+      }
+
+      let token = req.headers["authorization"];
+      if (!token) {
+        throw {
+          code: 401,
+          message: "Authorization header not found",
+          status: "UNDEFINED_TOKEN",
+        };
+      }
+      token = token.replace("Bearer ", "");
+
+      const authData = await authSvc.getSingleRowByFilter({
+        maskedAccessToken: token,
+      });
+      if (!authData) {
+        throw {
+          code: 401,
+          message: "Token not found",
+          status: "UNDEFINED_TOKEN",
+        };
+      }
+      
+      const data = jwt.verify(authData.accessToken, AppConfig.jwtSecret);
+      if (data.typ !== "Bearer") {
+        throw {
+          code: 401,
+          message: "Bearer token expected",
+          status: "BEARER_TOKEN_EXPECTED",
+        };
+      }
+
+      let userDetail = await userSvc.getSingleUserByFilter({
+        _id: data.sub,
+      });
+
+      if (!userDetail) {
+        throw {
+          code: 404,
+          message: "Admin user not found.",
+          status: "USER_NOT_FOUND",
+        };
+      }
+      
+      if (userDetail.role !== "ADMIN") {
+        throw {
+          code: 403,
+          message: "Only admins can register new users.",
+          status: "ADMIN_ONLY_REGISTRATION",
+        };
+      }
+      if (req.file) {
+        userData.image = await cloudinarySvc.fileUpload(req.file.path, "/user/");
+      }
+
+      const newUserData = {
+        name: userData.name,
+        email: userData.email,
+        password: bcrypt.hashSync(userData.password, 12),
+        role: userData.role,
+        status: Status.ACTIVE,
+        userName: userData.userName,
+        cafeName: userDetail.cafeName,
+        
+        // CHANGE THIS LINE: Use the new user's unique cafeUserName from the request body
+        cafeUserName: userData.cafeUserName, 
+        
+        image: userData.image || null,
+      };
+
+      let user = await userSvc.createUser(newUserData);
+      return user;
+    } catch (exception) {
+      throw exception;
+    }
+  };
+
+
+  registerUser = async (req, res, next) => {
+    try {
+      let token = req.headers["authorization"];
+      if (token) {
+        // Admin registration path
+        const adminRegister = await authSvc.createNewUserByAdmin(req);
+        res.json({
+          data: userSvc.getUserPublicProfile(adminRegister),
+          message: "User registration successful. Now user can login with his credentials.",
+          status: "Success",
+          options: null,
+        });
+      } else {
+        // Self registration path
+        const data = await authSvc.transformUserCreate(req);
+        let user = await userSvc.createUser(data);
+        await authSvc.sendActivationNotification(user);
+        res.json({
+          data: userSvc.getUserPublicProfile(user),
+          message: "User registration successful. Please check your email to activate your account.",
+          status: "Success",
+          options: null,
+        });
+      }
+    } catch (exception) {
+      next(exception);
     }
   };
 

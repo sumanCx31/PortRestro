@@ -4,6 +4,7 @@ const USER_ROLES = Object.freeze({
   MANAGER: "manager",
   WAITER: "waiter",
   CASHIER: "cashier",
+  STAFF: "staff",
 });
 
 const Status = Object.freeze({
