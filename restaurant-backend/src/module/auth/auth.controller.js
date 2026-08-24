@@ -126,7 +126,7 @@ toggleBlockUser = async (req, res, next) => {
   loginUser = async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      console.log("password:", password);
+      console.log("password:", password,email);
 
       const userDetail = await userSvc.getSingleUserByFilter({
         email: email,
@@ -497,7 +497,7 @@ toggleBlockUser = async (req, res, next) => {
       const users = await UserModel.find({
         cafeUserName: { $in: cafeUserName },
       })
-        .select("name email role phone address image")
+        .select("name email role phone address image status")
         .lean();
       const [adminCount, managerCount, staffCount] = await Promise.all([
         UserModel.countDocuments({ role: "admin" }),
