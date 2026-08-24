@@ -6,6 +6,8 @@ const staffRouter = require("../module/staff/staff.route");
 const tableRouter = require("../module/owner/table/table.route");
 const StatsRouter = require("../module/stats/stats.route");
 const expenseRouter = require("../module/owner/expenses/expense.route");
+const orderModel = require("../module/orderByQR/order.model");
+const OrderByQrouter = require("../module/orderByQR/orderQr.route");
 
 const router = require("express").Router()
 router.get("/",(req, res, next) => {
@@ -25,5 +27,6 @@ router.use("/menu",MenuRouter);
 router.use("/expense",expenseRouter);
 router.use("/analytics",StatsRouter);
 router.use("/category",categoryRouter);
+router.use("/order-by-qr",OrderByQrouter);
 
 module.exports = router;
