@@ -1,6 +1,7 @@
 const { randomStringGenerator } = require("../../../utilities/helper");
 const { AppConfig } = require("../../config/config");
 const { Status } = require("../../config/constant");
+const userModel = require("../user/user.model");
 // const { randomStringGenerator } = require("../../utilities/helper");
 const UserModel = require("../user/user.model");
 const userSvc = require("../user/user.service");
@@ -17,24 +18,24 @@ class AuthController {
         // admin registeration
         const adminRegister = await authSvc.createNewUserByAdmin(req);
         res.json({
-        data: userSvc.getUserPublicProfile(adminRegister),
-        message:
-          "User registration successful.Now user can login with his credentials.",
-        status: "Success",
-        options: null,
-      })
-      }else{
-      const data = await authSvc.transformUserCreate(req);
-      let user = await userSvc.createUser(data);
-      await authSvc.sendActivationNotification(user);
-      res.json({
-        data: userSvc.getUserPublicProfile(user),
-        message:
-          "User registration successful. Please check your email to activate your account.",
-        status: "Success",
-        options: null,
-      });
-    }
+          data: userSvc.getUserPublicProfile(adminRegister),
+          message:
+            "User registration successful.Now user can login with his credentials.",
+          status: "Success",
+          options: null,
+        });
+      } else {
+        const data = await authSvc.transformUserCreate(req);
+        let user = await userSvc.createUser(data);
+        await authSvc.sendActivationNotification(user);
+        res.json({
+          data: userSvc.getUserPublicProfile(user),
+          message:
+            "User registration successful. Please check your email to activate your account.",
+          status: "Success",
+          options: null,
+        });
+      }
     } catch (exception) {
       next(exception);
     }
@@ -82,6 +83,46 @@ class AuthController {
     }
   };
 
+toggleBlockUser = async (req, res, next) => {
+    try {
+      let token = req.headers["authorization"];
+      const admin = await authSvc.checkAdmin(token);
+      if (!admin) {
+        throw {
+          status: 403, // Changed to 403 Forbidden for authorization issues
+          message: "Admin only can toggle user account status.",
+        };
+      }
+      
+      const userId = req.params.userId;
+      const userDetail = await userModel.findById(userId);
+      
+      if (!userDetail) {
+        throw {
+          status: 404,
+          message: "User not found!",
+        };
+      }
+
+      // Toggle status based on current state
+      const isCurrentlyActive = userDetail.status === Status.ACTIVE; // Adjust if your active status constant differs
+      userDetail.status = isCurrentlyActive ? Status.INACTIVE : Status.ACTIVE;
+
+      await userDetail.save();
+
+      const actionText = userDetail.status === Status.ACTIVE ? "activated" : "deactivated/blocked";
+
+      res.status(200).json({
+        success: true,
+        message: `User account has been successfully ${actionText}.`,
+        data: userDetail,
+      });
+    } catch (exception) {
+      next(exception);
+    }
+  };
+
+  
   loginUser = async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -165,6 +206,32 @@ class AuthController {
       next(exception);
     }
   };
+
+  deleteUser = async (req, res, next) => {
+    try {
+      const userId = req.params.userId;
+      const userDetail = await userModel.findById(userId);
+      
+      if (!userDetail) {
+        throw {
+          status: 404,
+          message: "User not found!",
+        };
+      }
+
+      await userDetail.deleteOne();
+
+      res.status(200).json({
+        success: true,
+        message: "User account has been successfully deleted.",
+        data: userDetail,
+      });
+
+    } catch (exception) {
+      next(exception);
+    }
+  }
+
   refreshToken = async (req, res, next) => {
     try {
       let token = req.headers["authorization"];
@@ -432,13 +499,13 @@ class AuthController {
       })
         .select("name email role phone address image")
         .lean();
-      const [adminCount, managerCount,staffCount] = await Promise.all([
+      const [adminCount, managerCount, staffCount] = await Promise.all([
         UserModel.countDocuments({ role: "admin" }),
         UserModel.countDocuments({ role: "manager" }),
         UserModel.countDocuments({ role: "staff" }),
       ]);
 
-      const totalUsers = adminCount + managerCount+staffCount;
+      const totalUsers = adminCount + managerCount + staffCount;
 
       res.json({
         success: true,
@@ -446,7 +513,7 @@ class AuthController {
           adminCount: adminCount,
           managerCount: managerCount,
           staffCount: staffCount,
-          totalUsers:totalUsers,
+          totalUsers: totalUsers,
           Users: users,
         },
       });

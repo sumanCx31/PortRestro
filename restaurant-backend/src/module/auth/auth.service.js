@@ -238,6 +238,62 @@ createNewUserByAdmin = async (req) => {
     }
   };
 
+  checkAdmin=async(token)=>{
+    try {
+      if (!token) {
+              throw {
+                code: 401,
+                message: "Authorization header not found",
+                status: "UNDEFINED_TOKEN",
+              };
+            }
+            token = token.replace("Bearer ", "");
+      
+            const authData = await authSvc.getSingleRowByFilter({
+              maskedAccessToken: token,
+            });
+            if (!authData) {
+              throw {
+                code: 401,
+                message: "Token not found",
+                status: "UNDEFINED_TOKEN",
+              };
+            }
+            
+            const data = jwt.verify(authData.accessToken, AppConfig.jwtSecret);
+            if (data.typ !== "Bearer") {
+              throw {
+                code: 401,
+                message: "Bearer token expected",
+                status: "BEARER_TOKEN_EXPECTED",
+              };
+            }
+      
+            let userDetail = await userSvc.getSingleUserByFilter({
+              _id: data.sub,
+            });
+      
+            if (!userDetail) {
+              throw {
+                code: 404,
+                message: "Admin user not found.",
+                status: "USER_NOT_FOUND",
+              };
+            }
+            
+            if (userDetail.role !== "ADMIN") {
+              throw {
+                code: 403,
+                message: "Only admins can deactivate users.",
+                status: "ADMIN_ONLY_DEACTIVATE",
+              };
+            }
+            return userDetail;
+    } catch (exception) {
+      throw exception;
+    }
+  }
+
   updateSingleRowByFilter = async (filter, data) => {
     try {
       return await AuthModel.findOneAndUpdate(

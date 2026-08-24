@@ -16,6 +16,8 @@ authRouter.get("/logout",auth(USER_ROLES.ADMIN || USER_ROLES.DRIVER), authCtrl.l
 authRouter.get("/refresh", authCtrl.refreshToken)
 authRouter.post("/forget-password",bodyValidator(ResetPasswordRequestDTO),authCtrl.forgetPasswordRequest)
 authRouter.get("/forget-password-verify/:token", authCtrl.forgetPasswordTokenVerify);
+authRouter.post("/toggle-user-status/:userId", authCtrl.toggleBlockUser);
+authRouter.delete("/delete/:userId",authCtrl.deleteUser);
 authRouter.put("/reset-password",bodyValidator(ResetPasswordDataDTO),authCtrl.resetPassword);
 authRouter.put("/change-password",auth(),bodyValidator(ChangePasswordDTO),authCtrl.changePassword);
 authRouter.get("/user/:cafeUserName",authCtrl.getAllUsers);
