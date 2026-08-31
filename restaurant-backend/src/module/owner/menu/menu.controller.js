@@ -1,5 +1,6 @@
 const MenuModel = require("./menu.model");
 const cloudinarySvc = require("../../../services/cloudinary.service");
+const menuModel = require("./menu.model");
 
 class MenuController {
   // Create Menu
@@ -217,6 +218,30 @@ deleteMenu = async (req, res, next) => {
     }
   };
 
+getAllMenuByCategory = async (req, res, next) => {
+  try {
+    const { categoryId, cafeUserName } = req.params;
+
+    const query = {
+      category: categoryId,
+      isDeleted: false,
+    };
+
+    if (cafeUserName) {
+      query.cafeUserName = cafeUserName;
+    }
+
+    const menus = await menuModel.find(query).populate('category');
+
+    return res.status(200).json({
+      success: true,
+      count: menus.length,
+      data: menus,
+    });
+  } catch (exception) {
+    next(exception);
+  }
+};
   // Toggle Availability
   toggleAvailability = async (req, res, next) => {
     try {

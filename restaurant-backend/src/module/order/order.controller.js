@@ -1,5 +1,6 @@
 const OrderModel = require("./order.model");
 const MenuModel = require("../owner/menu/menu.model");
+const orderModel = require("./order.model");
 
 class OrderController {
   createOrder = async (req, res, next) => {
@@ -348,6 +349,21 @@ decreaseOrderItemQuantity = async (req, res, next) => {
       success: true,
       message: "Item quantity updated successfully",
       data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+deleteAllOrders = async (req, res, next) => {
+  try {
+
+    const result = await orderModel.deleteMany({});
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully deleted all orders.`,
+      deletedCount: result.deletedCount, // Number of documents removed
     });
   } catch (error) {
     next(error);

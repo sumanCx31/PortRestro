@@ -1,3 +1,4 @@
+const expenseModel = require("./expense.model");
 const Expense = require("./expense.model");
 
 class ExpenseController {
@@ -101,6 +102,24 @@ class ExpenseController {
             });
         } catch (error) {
             console.error("Error deleting expense:", error);
+            return res.status(500).json({
+                status: "Error",
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+    };
+
+    deleteAll = async(req, res) => {
+        try {
+            const result = await expenseModel.deleteMany({});
+            
+                return res.status(200).json({
+                  success: true,
+                  message: `Successfully deleted all expenses.`,
+                  deletedCount: result.deletedCount, 
+                });
+        } catch (error) {
             return res.status(500).json({
                 status: "Error",
                 message: "Internal server error",

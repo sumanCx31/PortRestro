@@ -91,7 +91,7 @@ exports.acceptQrOrder = async (req, res) => {
   }
 };
 
-// 4. [Admin Side] Reject Order (Manually delete from Staging)
+
 exports.rejectQrOrder = async (req, res) => {
   try {
     const { qrOrderId } = req.params;

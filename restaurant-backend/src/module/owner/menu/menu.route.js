@@ -29,6 +29,7 @@ MenuRouter.get(
   menuController.getMenuById
 );
 
+
 // Update Menu
 MenuRouter.put(
   "/:id",
@@ -36,6 +37,9 @@ MenuRouter.put(
   // upload.single("image"),
   menuController.updateMenu
 );
+
+
+MenuRouter.get("/get-all-menus/:categoryId/:cafeUserName",menuController.getAllMenuByCategory)
 
 // Delete Menu
 MenuRouter.delete(
