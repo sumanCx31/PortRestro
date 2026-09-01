@@ -355,6 +355,24 @@ decreaseOrderItemQuantity = async (req, res, next) => {
   }
 };
 
+deleteOrderById = async (req, res, next) => {
+  try {
+    const { _orderId } = req.params;
+
+    const order = await OrderModel.findByIdAndDelete(_orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    } 
+  }
+  catch (error) {
+    next(error);
+  }
+}
+
 deleteAllOrders = async (req, res, next) => {
   try {
 
